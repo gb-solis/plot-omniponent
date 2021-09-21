@@ -1,0 +1,53 @@
+name:                plot-omniponent
+version:             0.1.0.0
+github:              "Megaleo/plot-omniponent"
+license:             BSD3
+author:              "Leonardo Lessa"
+maintainer:          "leonardo.a.lessa@gmail.com"
+copyright:           "2021 Leonardo Lessa"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/plot-omniponent#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- transformers
+- extra
+- util
+- random
+- random-shuffle
+
+library:
+  source-dirs: src
+
+executables:
+  plot-omniponent-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - plot-omniponent
+
+tests:
+  plot-omniponent-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - plot-omniponent
