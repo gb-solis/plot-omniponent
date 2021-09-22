@@ -26,6 +26,8 @@ dependencies:
 - util
 - random
 - random-shuffle
+- parsec
+- generic-random
 
 library:
   source-dirs: src

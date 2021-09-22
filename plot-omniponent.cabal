@@ -35,6 +35,8 @@ library
   build-depends:
       base >=4.7 && <5
     , extra
+    , generic-random
+    , parsec
     , random
     , random-shuffle
     , transformers
@@ -51,6 +53,8 @@ executable plot-omniponent-exe
   build-depends:
       base >=4.7 && <5
     , extra
+    , generic-random
+    , parsec
     , plot-omniponent
     , random
     , random-shuffle
@@ -69,6 +73,8 @@ test-suite plot-omniponent-test
   build-depends:
       base >=4.7 && <5
     , extra
+    , generic-random
+    , parsec
     , plot-omniponent
     , random
     , random-shuffle

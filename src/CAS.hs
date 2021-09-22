@@ -1,6 +1,11 @@
 module CAS where
 
 import           Control.Monad             (ap, liftM, liftM2)
+import           Data.Functor.Identity     (Identity)
+import           Data.Char                 (isSpace)
+import           Text.Parsec               (Parsec, ParseError, parse, char, try, between, string, choice, (<|>), option, digit, many1, oneOf, eof)
+import           Text.Parsec.Expr          (Assoc(..), Operator(..), buildExpressionParser)
+import           Data.Functor              (($>))
 
 data Term a = Const a | Var deriving Eq
 
@@ -23,8 +28,10 @@ genUpTo leaves n = shallowExprs ++ binaryExprs ++ unaryExprs where
     unaryExprs = concatMap (`map` shallowExprs) [Exp]
 
 instance Show a => Show (Expr a) where
-    show (Sum e1 e2)  = "(" ++ show e1 ++ " + " ++ show e2 ++ ")"
-    show (Prod e1 e2) = "(" ++ show e1 ++ " * " ++ show e2 ++ ")"
+    show (Sum e1 e2)  = show e1 ++ "+" ++ show e2
+    show (Prod e1 e2) = showParens e1 ++ "*" ++ showParens e2 where
+        showParens e@(Sum _ _) = "(" ++ show e ++ ")"
+        showParens e           = show e
     show (Exp e)      = "exp(" ++ show e ++ ")"
     show (Leaf a)     = show a
 
@@ -42,6 +49,41 @@ instance Monad Expr where
     (Leaf a)     >>= f = f a
 
 type SymExpr = Expr (Term Float)
+
+
+termParser :: Parsec String () (Term Float)
+termParser = varP <|> constP where
+    constP = Const <$> float
+    varP = string (show (Var :: Term Float)) $> Var
+    -- Below are helper functions to parse Floats.
+    -- Source: https://www.schoolofhaskell.com/user/stevely/parsing-floats-with-parsec
+    (<++>) a b = (++) <$> a <*> b
+    (<:>) a b = (:) <$> a <*> b
+    number = many1 digit
+    plus = char '+' *> number
+    minus = char '-' <:> number
+    integer = plus <|> minus <|> number
+    float = fmap rd $ integer <++> decimal <++> exponent
+        where rd       = read :: String -> Float
+              decimal  = option "" $ char '.' <:> number
+              exponent = option "" $ oneOf "eE" <:> integer
+
+symExprParser :: Parsec String () SymExpr
+symExprParser = buildExpressionParser tableP termP where
+    parensP = between (char '(') (char ')')
+    termP = parensP symExprParser <|> (Leaf <$> termParser)
+    tableP = [ [prefix "exp" Exp]
+             , [binary "*" Prod AssocLeft]
+             , [binary "+" Sum AssocLeft]
+             ]
+    binary name f assoc = Infix (string name $> f) assoc :: Operator String () Identity SymExpr
+    prefix name f       = Prefix (string name $> f)      :: Operator String () Identity SymExpr
+
+parseSymExpr :: String -> Either ParseError SymExpr
+parseSymExpr = parse (symExprParser <* eof) "" . filter (not . isSpace)
+
+readSymExpr :: String -> SymExpr
+readSymExpr = either (error . show) id . parseSymExpr
 
 type NumExpr = Expr Float
 
