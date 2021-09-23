@@ -1,0 +1,11 @@
+## Plot
+- [ ] Correct PartialCont behaviour for 'exact' functions such as f(x) = x
+
+## CAS
+- [ ] genUpTo with chosen operators
+- [ ] Reduce expressions to a normal form
+
+## Game
+- [ ] Separate game options from game state
+- [ ] Different modes of game
+    - [ ] Different operators (polynomials, choose-your-own)
