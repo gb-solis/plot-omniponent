@@ -21,4 +21,6 @@ main = do
                                     seed = stdSeed }
     finalGameState <- execStateT gameLoop initGameState
     putStrLn $ "You got " ++ show (points finalGameState) ++ "/" ++ show (1 + plotsLeft initGameState) ++ " right!"
+    putStrLn "\nPress <ENTER> to exit"
+    getLine
     return ()
