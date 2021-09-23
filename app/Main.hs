@@ -8,7 +8,7 @@ import           Control.Monad.Trans.State (execStateT)
 
 main :: IO ()
 main = do
-    let expr = Sum (Prod (Leaf Var) (Leaf Var)) (Leaf (Const (-1) )) -- x^2 - 1
+    let expr = readSymExpr "x*x-1" -- x^2 - 1
     stdSeed <- getStdGen
     let initGameState = GameState { points = 0,
                                     chooseExprs = [expr, expr, expr, expr],
