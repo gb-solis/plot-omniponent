@@ -72,8 +72,9 @@ genUpTo leaves n = shallowExprs ++ binaryExprs ++ unaryExprs where
     shallowExprs = genUpTo leaves (n-1)
     allBinaryOps = map Binary $ enumFrom minBound
     allUnaryOps = map Unary $ enumFrom minBound
-    binaryExprs = concatMap (\op -> map (uncurry op) $ liftM2 (,) shallowExprs shallowExprs) allBinaryOps -- Can be optimized for commmutative operators
-    unaryExprs = concatMap (`map` shallowExprs) allUnaryOps
+    binaryExprs = allBinaryOps <*> shallowExprs <*> shallowExprs -- Can be optimized for commmutative operators
+    unaryExprs  = allUnaryOps  <*> shallowExprs
+
 
 type SymExpr = Expr (Term Float)
 
