@@ -36,11 +36,11 @@ nextQuestion game = game{ plotIndex = newPlotIndex,
     nubbedExprs = nubBy (\s1 s2 -> (l2dist (-1,1) 0.1 s1 s2) <= 1e-6) allExprs
     (plotExprInd, seed1) = uniformR (0, length nubbedExprs - 1) (seed game)
     plotExpr = nubbedExprs !! plotExprInd -- Chooses the expression to be plotted
-    dists = map (l2dist (-1,1) 0.1 plotExpr) nubbedExprs -- Distances to plotExpr
-    nubbedExprsWithDists = zip nubbedExprs dists
-    newOtherExprs = take (length (chooseExprs game) - 1) $ tail $ map fst $ sortOn snd nubbedExprsWithDists -- Chooses closest expressions (alliviate this to make easier?)
-    newShuffledOtherExprs = shuffle' newOtherExprs (length newOtherExprs) seed1 -- Shuffles the other options
-    (newPlotIndex, newSeed) = uniformR (0, length (chooseExprs game) - 1) seed1
+    nExprs = length (chooseExprs game) - 1
+    newOtherExprs = take nExprs $ tail $ sortOn distToPlotExpr nubbedExprs
+        where distToPlotExpr = l2dist (-1,1) 0.1 plotExpr
+    newShuffledOtherExprs = shuffle' newOtherExprs nExprs seed1 -- Shuffles the other options
+    (newPlotIndex, newSeed) = uniformR (0, nExprs) seed1
     newChooseExprs = take newPlotIndex newShuffledOtherExprs
                   ++ [plotExpr]
                   ++ drop newPlotIndex newShuffledOtherExprs -- Arranges options
