@@ -8,7 +8,6 @@ import           Data.List                 (elemIndex, nubBy, sortOn)
 import           Plot
 import           System.Random             (StdGen, uniformR)
 import           System.Random.Shuffle     (shuffle')
-import           Util                      ((∘∘))
 
 -- NEEDS A SMART CONSTRUCTOR
 data GameState = GameState { points       :: Int,
@@ -34,7 +33,7 @@ nextQuestion game = game{ plotIndex = newPlotIndex,
     -- What follows here is a disgusting removal of equivalent expressions
     -- by calculating the L^2 distance between them
     allExprs = genUpTo (allowedTerms game) (exprsUpTo game)
-    nubbedExprs = nubBy ((<= 1e-6) ∘∘ l2dist (-1,1) 0.1) allExprs
+    nubbedExprs = nubBy (\s1 s2 -> (l2dist (-1,1) 0.1 s1 s2) <= 1e-6) allExprs
     (plotExprInd, seed1) = uniformR (0, length nubbedExprs - 1) (seed game)
     plotExpr = nubbedExprs !! plotExprInd -- Chooses the expression to be plotted
     dists = map (l2dist (-1,1) 0.1 plotExpr) nubbedExprs -- Distances to plotExpr

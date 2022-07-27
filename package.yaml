@@ -23,7 +23,6 @@ dependencies:
 - base >= 4.7 && < 5
 - transformers
 - extra
-- util
 - random
 - random-shuffle
 - parsec

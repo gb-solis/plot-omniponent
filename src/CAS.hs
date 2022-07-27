@@ -7,7 +7,6 @@ import           Text.Parsec               (Parsec, ParseError, parse, char, bet
 import           Text.Parsec.Expr          (Assoc(..), Operator(..), buildExpressionParser)
 import           Data.Functor              (($>))
 import           Data.List                 (groupBy)
-import           Util                      (compose2)
 
 data Term a = Const a | Var deriving Eq
 
@@ -100,7 +99,7 @@ symExprParser = buildExpressionParser tableP termP where
     parensP = between (char '(') (char ')')
     termP = parensP symExprParser <|> (Leaf <$> termParser)
     tableP = map prefix (enumFrom minBound :: [UnaryOp])
-           : map (map binaryLeft) (groupBy (compose2 (==) precedence precedence) $ enumFrom minBound)
+           : map (map binaryLeft) (groupBy (\a b -> (precedence a) == (precedence b)) $ enumFrom minBound)
     binaryLeft bOp = Infix (string (show bOp) $> Binary bOp) AssocLeft :: Operator String () Identity SymExpr
     prefix uOp     = Prefix (string (show uOp) $> Unary uOp)      :: Operator String () Identity SymExpr
 
